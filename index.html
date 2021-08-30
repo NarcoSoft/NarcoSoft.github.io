@@ -51,8 +51,7 @@ margin-top:15px;
 
 .rowStyle{
 height:100%;
-border-color:black;
-border-width:0px;
+border:0px black;
 border-style:solid;
 border-radius:50px;
 background:darkgray;
@@ -193,26 +192,8 @@ animation:anime .3s
 display:none;
 position:absolute;
 margin-top:55px;
-}
 
-.haberlerStyle{
-display:none;
-width:260px;
-height:20px;
-margin-top:5px;
-margin-left:5px;
-background:black;
-border-color:green;
-border-style:solid;
-border-radius:0px 4px 4px 0px;
-border-width: 0px 0px 0px 10px;
 }
-
-.haberStyle{
-display:none;
-}
- 
- 
  
 
 </style>	 
@@ -232,18 +213,6 @@ clickSound.play()
 function grafikYukle(){
 var sd = []
 var shn = []
-
-if($("#oyunSayfasi").css('display','block')){
-setTimeout(function(){
-$("#haberler").animate({'width':'show'},1000);
-$("#haber").fadeToggle(3500)
-$("#haber").fadeToggle(2500)
-setTimeout(function(){
-$("#haberler").animate({'width':'hide'},1000);
-},5000)
-},10000)
-}
-
 var kullaniciAdi = localStorage.getItem('kullaniciAdi')
 var kullaniciKodu = localStorage.getItem('userCode')
 var rakipAdi = $('#gameOpponentSpace').html()
@@ -420,8 +389,6 @@ $('#badgeİstek').hide()
 
 
 function newGame2(){
-$('#haberler').hide()
-$('#haber').hide()
 $("#gameOverSpace").html('')
 oyunKodu=$('#keySpace').html()
 var query = firebase.database().ref("oyunlar/"+oyunKodu); 
@@ -645,20 +612,6 @@ var tarih = new Date()
 if(oyunKey=='yeni oyun'){
 var event = confirm("Oyun bitmeden oyunu silemezsiniz! Oyununuz tıkanmış ise rakibinizden onay alarak bu oyunu silebilirsiniz. Rakibinize onay mesajı göndermek istiyor musunuz?")
 if(event==true){
-
-var gondSilİst=[]
-var tquery=firebase.database().ref("silme istekleri")
-tquery.on("value",function(snapshot){
-	snapshot.forEach(function(childSnapshot){
-		var datam = childSnapshot.val()
-		if(datam.silmeFrom==kullaniciAdi){
-			gondSilİst.push(datam.silmeWith)
-		}
-	})
-})
-
-setTimeout(function(){
-if(gondSilİst.indexOf(person)==-1){
 silmeKodu=firebase.database().ref("silme istekleri").push().key
 	firebase.database().ref('silme istekleri/'+silmeKodu).set({
     silmeFrom: kullaniciAdi,
@@ -667,12 +620,6 @@ silmeKodu=firebase.database().ref("silme istekleri").push().key
 	  silinecekOyunKodu: eKey,
 	  tarih: gun+'.'+ay+'.'+yil+'-'+saat+':'+dakika,
   });
-alert("Oyunu silme teklifiniz başarıyla iletildi!")
-}else{
-alert("Bu kullanıcıya gönderilen bir oyun silme teklifiniz zaten bulunmakta!")
-}
-},300)
-
 }
 
 }else{
@@ -1058,11 +1005,11 @@ var query = firebase.database().ref("oyunlar");
  
  
  if(data.from==kullaniciAdi){
- $("#gamesSayfasiBody").prepend(oyuncu1);
+ $("#gamesSayfasiBody").append(oyuncu1);
  oyunlar.push(data.with)
  gn=gn+1
  }else if(data.with==kullaniciAdi){
- $("#gamesSayfasiBody").prepend(oyuncu2);
+ $("#gamesSayfasiBody").append(oyuncu2);
  oyunlar.push(data.from)
  gn=gn+1
  }
@@ -2277,8 +2224,6 @@ alert('Kendi kullanıcı adınıza istek gönderemezsiniz!')
 
 
 function back(){
-$("#haber").hide()
-$("#haberler").hide()
 if($('#gidenİstekSayfasi').css('display')=="block" || $('#istekİptalSayfasi').css('display')=="block" || $('#yeniOzelliklerSayfasi').css('display')=="block" || $('#datayliYardimSayfasi').css('display')=="block"){
 	user()
 }else{
@@ -2594,7 +2539,6 @@ var query = firebase.database().ref("silme istekleri");
  
  if(data.silmeWith==kullaniciAdi){
  $("#istekİptalSayfasiBody").append(iptalKisisi);
- iptalİstekler.push(iptalKisisi)
  }
  });
  });
@@ -2748,7 +2692,7 @@ var kullaniciKodu = localStorage.getItem('userCode')
 </script>
 
 <div style="margin-top:15px">	 
-<div class="container"  id="oyunSayfasi" style="display:none;">
+<div class="container"  id="oyunSayfasi" style="display:none">
 	<div   id="header" onClick="" >
 		<div class="row" style="border-bottom:4px solid black">
 			<div class="col-xs-12 headerStyle">
@@ -3394,7 +3338,7 @@ align-items:center;"  id="profilSpanAdi"></h3>
 
 
 
-<div class="container"  id="gamesSayfasi" style="display:none;">
+<div class="container"  id="gamesSayfasi" style="display:none">
 	<div class=""  id="header">
 		<div class="row">
 			<div class="col-xs-12 headerStyle">
@@ -3629,17 +3573,6 @@ align-items:center;"  id="profilSpanAdi"></h3>
 							Jeton özelliği ile rakiplerini ne kadar az hamlede yenilgiye uğratırsan o kadar çok jeton kazanıyorsun. Jetonlarını puana dönüştür sende sıralamanı yükselt!
 							</p>
 					</div>
-					
-					
-					
-					<div style="background:#90caf9;" class="jumbotron text-center newsStyle">
-							<h3>
-							Oyun Silme İsteği Gönder
-							</h3>
-							<p>
-							Gambit'te bu zamana kadar henüz bitmemiş olan oyunları silmek yasaktı. Kaybettiğini anlayan rakibinizin oyunu silerek oyunu kazanmanıza engel olmaması için geliştirilen bu durumda, pata bitme durumları oyunun tıkanmasına neden oluyordu. Bu durumda artık karşı taraftan onay alarak oyunu silmeniz mümkün!
-							</p>
-					</div>
 				   
 				   
 				   <div style="background:#ef5350;" class="jumbotron text-center newsStyle">
@@ -3757,22 +3690,6 @@ align-items:center;"  id="profilSpanAdi"></h3>
    		</div> 		
 
 </div>
-
-
-<div class="container haberlerStyle"  id="haberler">
-<div  id="haber"  class="haberStyle">
-<u><a onClick="yeniOzellikler()" style="color:white">Yeni özellikleri gör! /// 01.05.2021</a></u>
-</div>
-</div>
-
-<div class="container haberStyle"  id="haber">
-
-</div>
-
-
-
-
-
 	
 	 </body>
 	 
